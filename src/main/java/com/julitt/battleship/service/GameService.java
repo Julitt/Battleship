@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @Service
 @Getter
-public class Game {
+public class GameService {
 
     @Setter
     private boolean gameStarted;
@@ -22,7 +22,7 @@ public class Game {
     private boolean myTurn;
     private int boardSize;
     private BoardField[][] opponentsBoard;
-    private BoardField[][] myBoard;
+    //TODO show myBoard private BoardField[][] myBoard;
     private final List<Ship> ships = new ArrayList();
 
     public void newGame(boolean myTurn, int boardSize){
@@ -30,7 +30,6 @@ public class Game {
         this.myTurn = myTurn;
         this.boardSize = boardSize;
         this.opponentsBoard = new BoardField[boardSize][boardSize];
-        this.myBoard = new BoardField[boardSize][boardSize];
         initializeBoards();
     }
 
@@ -38,7 +37,6 @@ public class Game {
         for(int i=0; i<boardSize; i++){
             for(int j=0; j<boardSize; j++){
                 opponentsBoard[i][j] = BoardField.UNKNOWN;
-                myBoard[i][j] = BoardField.UNKNOWN;
             }
         }
         setUpShips();
@@ -60,7 +58,7 @@ public class Game {
         ships.add(new Ship(coordinates));
     }
 
-    public void myShoot(Coordinates coordinates, BoardField boardField){
+    public void myShot(Coordinates coordinates, BoardField boardField){
         opponentsBoard[coordinates.getX()][coordinates.getY()] = boardField;
         showBoard();
         if(boardField.equals(BoardField.EMPTY)){
@@ -98,5 +96,11 @@ public class Game {
         addShip(Arrays.asList(new Coordinates(0,4), new Coordinates(0,5), new Coordinates(0, 6)));
         addShip(Arrays.asList(new Coordinates(2,1), new Coordinates(3,1), new Coordinates(4, 1)));
         addShip(Arrays.asList(new Coordinates(6,9), new Coordinates(7,9), new Coordinates(8, 9), new Coordinates(9,9)));
+    }
+
+    public void showShot(Coordinates shoot, BoardField result){
+        System.out.println("Shoot at "+shoot.getX() + ", " + shoot.getY());
+        System.out.println("Result: "+ result);
+        System.out.println();
     }
 }

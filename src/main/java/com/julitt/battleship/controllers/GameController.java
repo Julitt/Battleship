@@ -2,7 +2,7 @@ package com.julitt.battleship.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import com.julitt.battleship.service.Game;
+import com.julitt.battleship.service.GameService;
 import com.julitt.battleship.boards.BoardField;
 import com.julitt.battleship.model.Coordinates;
 import com.julitt.battleship.model.ShootResponse;
@@ -26,7 +26,7 @@ import java.util.List;
 public class GameController {
 
     @Autowired
-    Game game;
+    GameService gameService;
 
     Gson gson = new Gson();
     HttpClient client = HttpClient.newHttpClient();
@@ -37,25 +37,23 @@ public class GameController {
 
     @RequestMapping(value = "/start", method = RequestMethod.POST)
     public ResponseEntity<String> startGame(@RequestBody Start start) {
-        game.newGame(start.isYouStart(), BOARD_SIZE);
+        gameService.newGame(start.isYouStart(), BOARD_SIZE);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @RequestMapping(value = "/shoot", method = RequestMethod.POST)
     public ResponseEntity<String> shoot(@RequestBody Coordinates shoot) {
-        if(!game.isGameStarted() || game.isMyTurn()){
+        if(!gameService.isGameStarted() || gameService.isMyTurn()){
             return new ResponseEntity<>("It's my turn", HttpStatus.NOT_ACCEPTABLE);
         }
-        BoardField result = game.shoot(shoot);
-        System.out.println("Shoot at "+shoot.getX() + ", " + shoot.getY());
-        System.out.println("Result: "+ result);
-        System.out.println();
+        BoardField result = gameService.shoot(shoot);
+        gameService.showShot(shoot, result);
         return new ResponseEntity<>(gson.toJson(new ShootResponse(result.toString())), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/addShip", method = RequestMethod.POST)
     public ResponseEntity<String> addShip(@RequestBody List<Coordinates> coordinates) {
-        game.addShip(coordinates);
+        gameService.addShip(coordinates);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -72,7 +70,7 @@ public class GameController {
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         ShootResponse shootResponse = gson.fromJson(response.body(), ShootResponse.class);
-        game.myShoot(coordinates, BoardField.valueOf(shootResponse.getResult()));
+        gameService.myShot(coordinates, BoardField.valueOf(shootResponse.getResult()));
         return new ResponseEntity<>(String.valueOf(response.body()), HttpStatus.OK);
     }
 
@@ -89,7 +87,7 @@ public class GameController {
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         if(response.statusCode() == 200){
-            game.newGame(!start.isYouStart(), BOARD_SIZE);
+            gameService.newGame(!start.isYouStart(), BOARD_SIZE);
         }
         return new ResponseEntity<>(String.valueOf(response.body()), HttpStatus.OK);
     }
