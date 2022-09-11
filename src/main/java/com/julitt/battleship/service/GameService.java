@@ -1,7 +1,8 @@
 package com.julitt.battleship.service;
 
-import com.julitt.battleship.boards.BoardField;
-import com.julitt.battleship.boards.Ship;
+import com.julitt.battleship.board.BoardField;
+import com.julitt.battleship.board.BoardUI;
+import com.julitt.battleship.board.Ship;
 import com.julitt.battleship.model.Coordinates;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+
+import static com.julitt.battleship.board.BoardField.*;
 
 @Service
 @Getter
@@ -36,7 +39,7 @@ public class GameService {
     private void initializeBoards(){
         for(int i=0; i<boardSize; i++){
             for(int j=0; j<boardSize; j++){
-                opponentsBoard[i][j] = BoardField.UNKNOWN;
+                opponentsBoard[i][j] = UNKNOWN;
             }
         }
         setUpShips();
@@ -48,41 +51,24 @@ public class GameService {
                 .findFirst();
         if(ship.isEmpty()){
             myTurn = true;
-            return BoardField.EMPTY;
+            return EMPTY;
         }
         ship.get().shoot(coordinates);
-        return ship.get().isSunk() ? BoardField.SUNK : BoardField.HIT;
+        return ship.get().isSunk() ? SUNK : HIT;
     }
 
     public void addShip(List<Coordinates> coordinates){
         ships.add(new Ship(coordinates));
     }
 
-    public void myShot(Coordinates coordinates, BoardField boardField){
-        opponentsBoard[coordinates.getX()][coordinates.getY()] = boardField;
-        showBoard();
-        if(boardField.equals(BoardField.EMPTY)){
+    public void myShot(Coordinates coordinates, BoardField result){
+        opponentsBoard[coordinates.getX()][coordinates.getY()] = result;
+        if(result.equals(EMPTY)){
             myTurn = false;
+        }else if(result.equals(SUNK)){
+            markShipSunk(coordinates.getX(), coordinates.getY());
         }
-    }
-
-    private void showBoard(){
-        for(int i=0; i<boardSize; i++){
-            for(int j=0; j<boardSize; j++){
-                BoardField field = opponentsBoard[i][j];
-                if(field.equals(BoardField.UNKNOWN)){
-                    System.out.print("[ ]");
-                }if(field.equals(BoardField.HIT)){
-                    System.out.print("[X]");
-                }if(field.equals(BoardField.SUNK)){
-                    System.out.print("[S]");
-                }if(field.equals(BoardField.EMPTY)){
-                    System.out.print("[-]");
-                }
-            }
-            System.out.println();
-        }
-        System.out.println("----------------------------------");
+        BoardUI.showBoard(opponentsBoard);
     }
 
     private void setUpShips(){
@@ -102,5 +88,20 @@ public class GameService {
         System.out.println("Shoot at "+shoot.getX() + ", " + shoot.getY());
         System.out.println("Result: "+ result);
         System.out.println();
+    }
+
+    private void markShipSunk(int x, int y){
+        for (int i=-1; i<2; i++){
+            for (int j=-1; j<2; j++){
+                if (x+i >= 0 && x+i <10 && y+j >= 0 && y+j < 10) {
+                    if (opponentsBoard[x + i][y + j].equals(UNKNOWN)){
+                        opponentsBoard[x + i][y + j] = EMPTY;
+                    } else if (opponentsBoard[x + i][y + j].equals(HIT)) {
+                        opponentsBoard[x + i][y + j] = SUNK;
+                        markShipSunk(x + i, y + j);
+                    }
+                }
+            }
+        }
     }
 }

@@ -1,9 +1,9 @@
-package com.julitt.battleship.controllers;
+package com.julitt.battleship.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.julitt.battleship.service.GameService;
-import com.julitt.battleship.boards.BoardField;
+import com.julitt.battleship.board.BoardField;
 import com.julitt.battleship.model.Coordinates;
 import com.julitt.battleship.model.ShootResponse;
 import com.julitt.battleship.model.Start;
@@ -33,7 +33,7 @@ public class GameController {
     ObjectMapper objectMapper = new ObjectMapper();
 
     private final int BOARD_SIZE = 10;
-    private final String URL = "http://192.168.1.10:9909";
+    private final String URL = "http://localhost:8080";
 
     @RequestMapping(value = "/start", method = RequestMethod.POST)
     public ResponseEntity<String> startGame(@RequestBody Start start) {

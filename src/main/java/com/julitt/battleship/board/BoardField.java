@@ -1,4 +1,4 @@
-package com.julitt.battleship.boards;
+package com.julitt.battleship.board;
 
 public enum BoardField {
     
