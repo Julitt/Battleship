@@ -26,7 +26,7 @@ public class GameService {
     private int boardSize;
     private BoardField[][] opponentsBoard;
     //TODO show myBoard private BoardField[][] myBoard;
-    private final List<Ship> ships = new ArrayList();
+    private final List<Ship> ships = new ArrayList<>();
 
     public void newGame(boolean myTurn, int boardSize){
         this.gameStarted = true;
@@ -93,7 +93,7 @@ public class GameService {
     private void markShipSunk(int x, int y){
         for (int i=-1; i<2; i++){
             for (int j=-1; j<2; j++){
-                if (x+i >= 0 && x+i <10 && y+j >= 0 && y+j < 10) {
+                if (x+i >= 0 && x+i < boardSize && y+j >= 0 && y+j < boardSize) {
                     if (opponentsBoard[x + i][y + j].equals(UNKNOWN)){
                         opponentsBoard[x + i][y + j] = EMPTY;
                     } else if (opponentsBoard[x + i][y + j].equals(HIT)) {
