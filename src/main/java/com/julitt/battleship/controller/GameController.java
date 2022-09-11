@@ -2,11 +2,11 @@ package com.julitt.battleship.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import com.julitt.battleship.service.GameService;
 import com.julitt.battleship.board.BoardField;
 import com.julitt.battleship.model.Coordinates;
 import com.julitt.battleship.model.ShootResponse;
 import com.julitt.battleship.model.Start;
+import com.julitt.battleship.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +43,7 @@ public class GameController {
 
     @RequestMapping(value = "/shoot", method = RequestMethod.POST)
     public ResponseEntity<String> shoot(@RequestBody Coordinates shoot) {
-        if(!gameService.isGameStarted() || gameService.isMyTurn()){
+        if (!gameService.isGameStarted() || gameService.isMyTurn()) {
             return new ResponseEntity<>("It's my turn", HttpStatus.NOT_ACCEPTABLE);
         }
         BoardField result = gameService.shoot(shoot);
@@ -86,7 +86,7 @@ public class GameController {
                 .build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        if(response.statusCode() == 200){
+        if (response.statusCode() == 200) {
             gameService.newGame(!start.isYouStart(), BOARD_SIZE);
         }
         return new ResponseEntity<>(String.valueOf(response.body()), HttpStatus.OK);

@@ -28,7 +28,7 @@ public class GameService {
     //TODO show myBoard private BoardField[][] myBoard;
     private final List<Ship> ships = new ArrayList<>();
 
-    public void newGame(boolean myTurn, int boardSize){
+    public void newGame(boolean myTurn, int boardSize) {
         this.gameStarted = true;
         this.myTurn = myTurn;
         this.boardSize = boardSize;
@@ -36,20 +36,20 @@ public class GameService {
         initializeBoards();
     }
 
-    private void initializeBoards(){
-        for(int i=0; i<boardSize; i++){
-            for(int j=0; j<boardSize; j++){
+    private void initializeBoards() {
+        for (int i = 0; i < boardSize; i++) {
+            for (int j = 0; j < boardSize; j++) {
                 opponentsBoard[i][j] = UNKNOWN;
             }
         }
         setUpShips();
     }
 
-    public BoardField shoot(Coordinates coordinates){
+    public BoardField shoot(Coordinates coordinates) {
         Optional<Ship> ship = ships.stream()
                 .filter(s -> s.getCoordinates().contains(coordinates))
                 .findFirst();
-        if(ship.isEmpty()){
+        if (ship.isEmpty()) {
             myTurn = true;
             return EMPTY;
         }
@@ -57,44 +57,44 @@ public class GameService {
         return ship.get().isSunk() ? SUNK : HIT;
     }
 
-    public void addShip(List<Coordinates> coordinates){
+    public void addShip(List<Coordinates> coordinates) {
         ships.add(new Ship(coordinates));
     }
 
-    public void myShot(Coordinates coordinates, BoardField result){
+    public void myShot(Coordinates coordinates, BoardField result) {
         opponentsBoard[coordinates.getX()][coordinates.getY()] = result;
-        if(result.equals(EMPTY)){
+        if (result.equals(EMPTY)) {
             myTurn = false;
-        }else if(result.equals(SUNK)){
+        } else if (result.equals(SUNK)) {
             markShipSunk(coordinates.getX(), coordinates.getY());
         }
         BoardUI.showBoard(opponentsBoard);
     }
 
-    private void setUpShips(){
+    private void setUpShips() {
         addShip(List.of(new Coordinates(0, 0)));
         addShip(List.of(new Coordinates(0, 2)));
         addShip(List.of(new Coordinates(0, 9)));
         addShip(List.of(new Coordinates(4, 9)));
-        addShip(Arrays.asList(new Coordinates(7,1), new Coordinates(6,1)));
-        addShip(Arrays.asList(new Coordinates(9,0), new Coordinates(9,1)));
-        addShip(Arrays.asList(new Coordinates(9,5), new Coordinates(9,4)));
-        addShip(Arrays.asList(new Coordinates(0,4), new Coordinates(0,5), new Coordinates(0, 6)));
-        addShip(Arrays.asList(new Coordinates(2,1), new Coordinates(3,1), new Coordinates(4, 1)));
-        addShip(Arrays.asList(new Coordinates(6,9), new Coordinates(7,9), new Coordinates(8, 9), new Coordinates(9,9)));
+        addShip(Arrays.asList(new Coordinates(7, 1), new Coordinates(6, 1)));
+        addShip(Arrays.asList(new Coordinates(9, 0), new Coordinates(9, 1)));
+        addShip(Arrays.asList(new Coordinates(9, 5), new Coordinates(9, 4)));
+        addShip(Arrays.asList(new Coordinates(0, 4), new Coordinates(0, 5), new Coordinates(0, 6)));
+        addShip(Arrays.asList(new Coordinates(2, 1), new Coordinates(3, 1), new Coordinates(4, 1)));
+        addShip(Arrays.asList(new Coordinates(6, 9), new Coordinates(7, 9), new Coordinates(8, 9), new Coordinates(9, 9)));
     }
 
-    public void showShot(Coordinates shoot, BoardField result){
-        System.out.println("Shoot at "+shoot.getX() + ", " + shoot.getY());
-        System.out.println("Result: "+ result);
+    public void showShot(Coordinates shoot, BoardField result) {
+        System.out.println("Shoot at " + shoot.getX() + ", " + shoot.getY());
+        System.out.println("Result: " + result);
         System.out.println();
     }
 
-    private void markShipSunk(int x, int y){
-        for (int i=-1; i<2; i++){
-            for (int j=-1; j<2; j++){
-                if (x+i >= 0 && x+i < boardSize && y+j >= 0 && y+j < boardSize) {
-                    if (opponentsBoard[x + i][y + j].equals(UNKNOWN)){
+    private void markShipSunk(int x, int y) {
+        for (int i = -1; i < 2; i++) {
+            for (int j = -1; j < 2; j++) {
+                if (x + i >= 0 && x + i < boardSize && y + j >= 0 && y + j < boardSize) {
+                    if (opponentsBoard[x + i][y + j].equals(UNKNOWN)) {
                         opponentsBoard[x + i][y + j] = EMPTY;
                     } else if (opponentsBoard[x + i][y + j].equals(HIT)) {
                         opponentsBoard[x + i][y + j] = SUNK;
